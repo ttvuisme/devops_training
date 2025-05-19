@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: barista
-          image: cuongopswat/go-coffeeshop-barista
+          image: ttvucse/devops_training:go-coffeeshop-barista
           envFrom:
             - configMapRef:
                 name: app-config
@@ -32,3 +32,5 @@ spec:
               value: "true"
             - name: RABBITMQ_URL
               value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"
+      imagePullSecrets:
+        - name: dockerhub-secret

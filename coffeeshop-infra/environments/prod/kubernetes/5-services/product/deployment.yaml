@@ -23,3 +23,5 @@ spec:
                 name: app-config
             - configMapRef:
                 name: postgres-config
+      imagePullSecrets:
+        - name: dockerhub-secret

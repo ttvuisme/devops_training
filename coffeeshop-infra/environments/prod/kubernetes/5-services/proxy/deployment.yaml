@@ -29,3 +29,5 @@ spec:
               value: counter-service
             - name: GRPC_COUNTER_PORT
               value: "5002"
+      imagePullSecrets:
+        - name: dockerhub-secret

@@ -20,7 +20,7 @@ module "eks" {
   cluster_name    = var.cluster_name
   vpc_id          = module.vpc.vpc_id
   subnet_ids      = module.vpc.public_subnet_ids
-  
+
   # Security improvements
   cluster_endpoint_public_access       = true
   cluster_endpoint_private_access      = true # Enable private access
@@ -54,6 +54,8 @@ module "eks" {
       # Required for CSI driver
       iam_role_additional_policies = {
         AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      
+        CloudWatchAgentPolicy    = aws_iam_policy.cloudwatch_agent_policy.arn
       }
     }
   }
@@ -101,6 +103,32 @@ resource "time_sleep" "wait_30_seconds" {
   depends_on = [module.eks]
 
   create_duration = "30s"
+}
+
+# IAM policy for CloudWatch agent
+resource "aws_iam_policy" "cloudwatch_agent_policy" {
+  name        = "EKSCloudWatchAgentPolicy"
+  description = "Permissions for CloudWatch agent on EKS nodes"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "cloudwatch:PutMetricData",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeTags",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams",
+          "logs:DescribeLogGroups",
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 # Outputs for debugging

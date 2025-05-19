@@ -9,7 +9,8 @@ resource "aws_s3_bucket" "tfstate" {
 
   # Block ALL public access
   lifecycle {
-    prevent_destroy = true  # Critical for state buckets!
+    # may need to set this to true for preventing accidental deletion
+    prevent_destroy = false
   }
 
   tags = {
