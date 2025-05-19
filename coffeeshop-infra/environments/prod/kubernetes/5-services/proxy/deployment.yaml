@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-service
+  namespace: coffeeshop-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy-service
+  template:
+    metadata:
+      labels:
+        app: proxy-service
+    spec:
+      containers:
+        - name: proxy
+          image: cuongopswat/go-coffeeshop-proxy
+          ports:
+            - containerPort: 5000
+          env:
+            - name: APP_NAME
+              value: proxy-service
+            - name: GRPC_PRODUCT_HOST
+              value: product-service
+            - name: GRPC_PRODUCT_PORT
+              value: "5001"
+            - name: GRPC_COUNTER_HOST
+              value: counter-service
+            - name: GRPC_COUNTER_PORT
+              value: "5002"

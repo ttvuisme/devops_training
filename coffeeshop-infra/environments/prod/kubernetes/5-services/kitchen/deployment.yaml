@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kitchen-service
+  namespace: coffeeshop-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kitchen-service
+  template:
+    metadata:
+      labels:
+        app: kitchen-service
+    spec:
+      containers:
+        - name: kitchen
+          image: cuongopswat/go-coffeeshop-kitchen
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: postgres-config
+            - configMapRef:
+                name: rabbitmq-config
+            - secretRef:
+                name: postgres-secret
+            - secretRef:
+                name: rabbitmq-secret
+          env:
+            - name: APP_NAME
+              value: kitchen-service
+            - name: IN_DOCKER
+              value: "true"
+            - name: RABBITMQ_URL
+              value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@$(RABBITMQ_HOST):$(RABBITMQ_PORT)"            

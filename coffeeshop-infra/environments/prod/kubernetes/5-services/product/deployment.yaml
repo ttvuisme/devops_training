@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: coffeeshop-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product
+          image: cuongopswat/go-coffeeshop-product
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - configMapRef:
+                name: postgres-config
