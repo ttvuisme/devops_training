@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: proxy
-          image: cuongopswat/go-coffeeshop-proxy
+          image: ttvucse/devops_training:go-coffeeshop-proxy
           ports:
             - containerPort: 5000
           env:

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: kitchen
-          image: cuongopswat/go-coffeeshop-kitchen
+          image: ttvucse/devops_training:go-coffeeshop-kitchen
           envFrom:
             - configMapRef:
                 name: app-config

@@ -24,26 +24,16 @@ variable "vpc_id" {
   default = "vpc-036478b69897378e3"
 }
 
-variable "environment" {
-  description = "Deployment environment (dev/staging/prod)"
-  type        = string
-  
-  validation {
-    condition     = contains(["dev", "prod"], var.environment)
-    error_message = "Environment must be dev, or prod"
-  }
-}
-
-variable "dockerhub_username" {
-  description = "Docker Hub username"
-  type        = string
-  default = "ttvucse"
-}
-
-variable "dockerhub_pat" {
+variable "docker_pat" {
   description = "Docker Hub Personal Access Token"
   type        = string
   // Sensitive information
   sensitive     = true
+}
+
+variable "docker_username" {
+  description = "Docker Hub username"
+  type        = string
+  default     = "ttvucse"
 }
   

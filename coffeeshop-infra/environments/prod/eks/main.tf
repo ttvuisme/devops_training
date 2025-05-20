@@ -26,6 +26,15 @@ module "eks" {
   cluster_endpoint_private_access      = true # Enable private access
   cluster_additional_security_group_ids = [] # Add any necessary SGs
 
+  # Enable logging
+  cluster_enabled_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+
   eks_managed_node_groups = {
     default = {
       min_size     = 1
@@ -74,6 +83,10 @@ module "eks" {
     aws-ebs-csi-driver = {
       most_recent              = true
       service_account_role_arn = module.ebs_csi_driver_irsa_role.iam_role_arn
+    }
+
+    amazon-cloudwatch-observability = {
+      most_recent = true
     }
   }
 }
@@ -129,6 +142,28 @@ resource "aws_iam_policy" "cloudwatch_agent_policy" {
       }
     ]
   })
+}
+
+resource "aws_cloudwatch_metric_alarm" "hpa_maxed_out" {
+  alarm_name          = "${module.eks.cluster_name}-hpa-scaled-to-max"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "kube_hpa_status_current_replicas"
+  namespace           = "ContainerInsights/Prometheus"
+  period              = "300" # 5 mins
+  statistic           = "Maximum"
+  threshold           = "4"
+  alarm_description   = "Triggers when coffeeshop-web HPA approaches max capacity (4/5 replicas)"
+  treat_missing_data  = "breaching"
+  
+  dimensions = {
+    ClusterName = module.eks.cluster_name
+    hpa         = "coffeeshop-web-hpa"
+    namespace   = "coffeeshop-prod"
+  }
+
+  # Completely remove alarm_actions if you just want the CloudWatch alert
+  # alarm_actions = [] 
 }
 
 # Outputs for debugging

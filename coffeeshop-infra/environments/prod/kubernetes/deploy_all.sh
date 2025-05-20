@@ -1,8 +1,9 @@
 #!/bin/bash
 
 set -e 
-
-# aws eks update-kubeconfig --name coffeeshop-prod --region ap-southeast-1
+# config the kubectl to use the EKS cluster
+echo "Configuring kubectl to use the EKS cluster..."
+aws eks update-kubeconfig --name coffeeshop-prod --region ap-southeast-1
 
 NAMESPACE=coffeeshop-prod
 
@@ -15,7 +16,7 @@ kubectl apply -n $NAMESPACE -f 2-secrets/
 echo "Create config maps..."
 kubectl apply -n $NAMESPACE -f 3-configs/
 
-eco "Deploy GP3 storage..."
+echo "Deploy GP3 storage..."
 kubectl apply -n $NAMESPACE -f 4-databases/gp3-storageclass.yaml
 
 echo "Deploy PostgreSQL..."
