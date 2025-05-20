@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-service
+  namespace: coffeeshop-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-service
+  template:
+    metadata:
+      labels:
+        app: web-service
+    spec:
+      containers:
+        - name: web
+          image: ttvucse/devops_training:go-coffeeshop-web
+          ports:
+            - containerPort: 8888
+          env:
+            - name: REVERSE_PROXY_URL
+              value: http://proxy-service:5000
+            - name: WEB_PORT
+              value: "8888"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8888
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8888
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+      imagePullSecrets:
+        - name: dockerhub-secret
